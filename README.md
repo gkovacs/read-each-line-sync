@@ -23,6 +23,7 @@ Encoding can optionally be omitted, in which case it will default to utf-8:
 # Credits
 
 Author: [Geza Kovacs](http://github.com/gkovacs)
+
 Based on [readLineSync](https://gist.github.com/Basemm/9700229)
 
 # License
