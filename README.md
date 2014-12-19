@@ -2,11 +2,11 @@
 
 Read file line by line, synchronously.
 
-# Install
+## Install
 
     npm install readEachLineSync
 
-# Example
+## Example
 
     var readEachLineSync = require('readEachLineSync')
     
@@ -20,12 +20,12 @@ Encoding can optionally be omitted, in which case it will default to utf-8:
       console.log(line)
     })
 
-# Credits
+## Credits
 
 Author: [Geza Kovacs](http://github.com/gkovacs)
 
 Based on [readLineSync](https://gist.github.com/Basemm/9700229)
 
-# License
+## License
 
 MIT
