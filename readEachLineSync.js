@@ -3,20 +3,21 @@
  * 
  * Example:
  *
- * var readEachLineSync = require('readEachLineSync');
+ * var readEachLineSync = require('read-each-file-sync')
  * 
  * readEachLineSync('test.txt', 'utf8', function(line) {
  *   console.log(line)
  * })
  *
- * Encoding can optionally be omitted, in which case it will default to utf-8:
+ * Encoding can optionally be omitted, in which case it will default to utf8:
  *
  * readEachLineSync('test.txt', function(line) {
  *   console.log(line)
  * })
  *
- * Author: Geza Kovacs, http://www.gkovacs.com/
- * Based on readLineSync by Basem Mostafa, https://gist.github.com/Basemm/9700229
+ * Github: https://github.com/gkovacs/read-each-line-sync
+ * Author: Geza Kovacs http://www.gkovacs.com/
+ * Based on readLineSync https://gist.github.com/Basemm/9700229
  * License: MIT
  */
 
@@ -64,9 +65,9 @@ function getLine(buffer) {
  */
 module.exports = function readEachLineSync(path, encoding, processline) {
 
-    if (typeof(encoding) == 'function') { // default to utf-8 if encoding not specified
+    if (typeof(encoding) == 'function') { // default to utf8 if encoding not specified
         processline = encoding;
-        encoding = 'utf-8';
+        encoding = 'utf8';
     }
 
     var fsize,

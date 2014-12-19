@@ -14,7 +14,7 @@ Read file line by line, synchronously.
       console.log(line)
     })
 
-Encoding can optionally be omitted, in which case it will default to utf-8:
+Encoding can optionally be omitted, in which case it will default to utf8:
 
     readEachLineSync('test.txt', function(line) {
       console.log(line)
