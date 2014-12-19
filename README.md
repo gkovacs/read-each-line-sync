@@ -4,7 +4,7 @@ Read file line by line, synchronously.
 
 # Install
 
-    npm install readEachFileSync
+    npm install readEachLineSync
 
 # Example
 
