@@ -1,14 +1,14 @@
-# readEachLineSync
+# read-each-line-sync
 
 Read file line by line, synchronously.
 
 ## Install
 
-    npm install readEachLineSync
+    npm install read-each-line-sync
 
 ## Example
 
-    var readEachLineSync = require('readEachLineSync')
+    var readEachLineSync = require('read-each-line-sync')
     
     readEachLineSync('test.txt', 'utf8', function(line) {
       console.log(line)
