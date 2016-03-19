@@ -100,7 +100,7 @@ module.exports = function readEachLineSync(path, encoding, processline) {
         fs.readSync(fd, readBuffer, 0, bufferSize, bufferSize * i);
         
         curBuffer = Buffer.concat( [curBuffer, readBuffer], curBuffer.length + readBuffer.length );
-        
+        var lineObj;
         while( lineObj = getLine( curBuffer ) ) {
             curBuffer = lineObj.newBuffer;
             processline(lineObj.line);
@@ -113,7 +113,7 @@ module.exports = function readEachLineSync(path, encoding, processline) {
         fs.readSync(fd, readBuffer, 0, remainder, bufferSize * i);
         
         curBuffer = Buffer.concat( [curBuffer, readBuffer], curBuffer.length + readBuffer.length );
-        
+        var lineObj;
         while( lineObj = getLine( curBuffer ) ) {
             curBuffer = lineObj.newBuffer;
             processline(lineObj.line);
