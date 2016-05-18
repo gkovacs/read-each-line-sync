@@ -1,21 +1,21 @@
 /**
  * Read file line by line, synchronously.
- * 
+ *
  * Example:
  *
- * var readEachLineSync = require('read-each-file-sync')
- * 
- * readEachLineSync('test.txt', 'utf8', function(line) {
+ * var readEachLine = require('read-each-line')
+ *
+ * readEachLine('test.txt', 'utf8', function(line) {
  *   console.log(line)
  * })
  *
  * Encoding can optionally be omitted, in which case it will default to utf8:
  *
- * readEachLineSync('test.txt', function(line) {
+ * readEachLine('test.txt', function(line) {
  *   console.log(line)
  * })
  *
- * Github: https://github.com/gkovacs/read-each-line-sync
+ * Github: https://github.com/gkovacs/read-each-line
  * Author: Geza Kovacs http://www.gkovacs.com/
  * Based on readLineSync https://gist.github.com/Basemm/9700229
  * License: MIT
@@ -35,15 +35,15 @@ var EOL = os.EOL;
  */
 function getLine(buffer) {
     var i, line, newBuffer, end;
-    
+
     for(i = 0; i < buffer.length; i++) {
         //detect end of line '\n'
         if ( buffer[i] === 0x0a) {
 
             end = i;
-            
+
             if ( EOL.length > 1 ) {
-                //account for windows '\r\n'    
+                //account for windows '\r\n'
                 end = i - 1;
             }
 
@@ -53,21 +53,29 @@ function getLine(buffer) {
             }
         }
     }
-    
+
     return null;
 }
 
 /**
  * Read file line by line synchronous
- * 
+ *
  * @param {String} path
  * @param {String} encoding - "optional" encoding in same format as nodejs Buffer
  */
-module.exports = function readEachLineSync(path, encoding, processline) {
+module.exports = function readEachLine(path, encoding, processline) {
 
     if (typeof(encoding) == 'function') { // default to utf8 if encoding not specified
         processline = encoding;
         encoding = 'utf8';
+    }
+
+    var buf_alloc = function(buf_size) {
+      if (Buffer.alloc) {
+        return Buffer.alloc(buf_size, encoding=encoding);
+      } else {
+        return new Buffer(buf_size, encoding=encoding);
+      }
     }
 
     var fsize,
@@ -75,30 +83,30 @@ module.exports = function readEachLineSync(path, encoding, processline) {
         chunkSize = 64 * 1024, //64KB
         bufferSize = chunkSize,
         remainder,
-        curBuffer = new Buffer(0, encoding),
+        curBuffer = buf_alloc(0),
         readBuffer,
         numOfLoops;
-        
+
     if ( !fs.existsSync( path ) ) {
         throw new Error("no such file or directory '" + path + "'");
     }
 
     fsize = fs.statSync(path).size;
-    
+
     if ( fsize < chunkSize ) {
         bufferSize = fsize;
     }
-    
+
     numOfLoops = Math.floor( fsize / bufferSize );
     remainder = fsize % bufferSize;
-    
+
     fd = fs.openSync(path, 'r');
-    
+
     for (var i = 0; i < numOfLoops; i++) {
-        readBuffer = new Buffer(bufferSize, encoding);
-        
+        readBuffer = buf_alloc(bufferSize);
+
         fs.readSync(fd, readBuffer, 0, bufferSize, bufferSize * i);
-        
+
         curBuffer = Buffer.concat( [curBuffer, readBuffer], curBuffer.length + readBuffer.length );
         var lineObj;
         while( lineObj = getLine( curBuffer ) ) {
@@ -106,12 +114,12 @@ module.exports = function readEachLineSync(path, encoding, processline) {
             processline(lineObj.line);
         }
     }
-    
+
     if ( remainder > 0 ) {
-        readBuffer = new Buffer(remainder, encoding);
-        
+        readBuffer = buf_alloc(remainder);
+
         fs.readSync(fd, readBuffer, 0, remainder, bufferSize * i);
-        
+
         curBuffer = Buffer.concat( [curBuffer, readBuffer], curBuffer.length + readBuffer.length );
         var lineObj;
         while( lineObj = getLine( curBuffer ) ) {
@@ -119,13 +127,12 @@ module.exports = function readEachLineSync(path, encoding, processline) {
             processline(lineObj.line);
         }
     }
-    
+
     //return last remainings in the buffer in case
     //it didn't have any more lines
     if ( curBuffer.length ) {
         processline(curBuffer.toString());
     }
-    
-    // release the file
+
     fs.closeSync(fd);
 }
