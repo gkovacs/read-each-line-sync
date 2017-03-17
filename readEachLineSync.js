@@ -15,6 +15,13 @@
  *   console.log(line)
  * })
  *
+ * End-Of-Line can be specified along with encoding if necessary, otherwise it defaults to your operating system EOF:
+ * 
+ * readEachLineSync('test.txt', 'utf-8', '\n', function(line) {
+ *   console.log(line)
+ * })
+ * 
+ * 
  * Github: https://github.com/gkovacs/read-each-line
  * Author: Geza Kovacs http://www.gkovacs.com/
  * Based on readLineSync https://gist.github.com/Basemm/9700229
@@ -25,15 +32,12 @@
 var fs = require('fs'),
     os = require('os');
 
-
-var EOL = os.EOL;
-
 /**
  * Get a line from buffer & return it + remaining buffer
  *
  * @param {Buffer} buffer
  */
-function getLine(buffer) {
+function getLine(buffer, eol) {
     var i, line, newBuffer, end;
 
     for(i = 0; i < buffer.length; i++) {
@@ -42,7 +46,7 @@ function getLine(buffer) {
 
             end = i;
 
-            if ( EOL.length > 1 ) {
+            if ( eol.length > 1 ) {
                 //account for windows '\r\n'
                 end = i - 1;
             }
@@ -62,12 +66,18 @@ function getLine(buffer) {
  *
  * @param {String} path
  * @param {String} encoding - "optional" encoding in same format as nodejs Buffer
+ * @param {String} eol - "optional" eol, if user wants to specify an End-Of-Line different than the OS
  */
-module.exports = function readEachLine(path, encoding, processline) {
+module.exports = function readEachLine(path, encoding, eol, processline) {
 
-    if (typeof(encoding) == 'function') { // default to utf8 if encoding not specified
+    if (typeof(encoding) == 'function') { 
+        // no encoding or eol specified, encoding defaults to utf-8 and eol to os.EOL
         processline = encoding;
         encoding = 'utf8';
+        eol = os.EOL;
+    }else if (typeof(eol) == 'function') { // encoding is specified but eol is not, eol defaults to os.EOL
+        processline = eol;
+        eol = os.EOL;
     }
 
     var buf_alloc = function(buf_size) {
@@ -109,7 +119,7 @@ module.exports = function readEachLine(path, encoding, processline) {
 
         curBuffer = Buffer.concat( [curBuffer, readBuffer], curBuffer.length + readBuffer.length );
         var lineObj;
-        while( lineObj = getLine( curBuffer ) ) {
+        while( lineObj = getLine( curBuffer , eol) ) {
             curBuffer = lineObj.newBuffer;
             processline(lineObj.line);
         }
@@ -122,7 +132,7 @@ module.exports = function readEachLine(path, encoding, processline) {
 
         curBuffer = Buffer.concat( [curBuffer, readBuffer], curBuffer.length + readBuffer.length );
         var lineObj;
-        while( lineObj = getLine( curBuffer ) ) {
+        while( lineObj = getLine( curBuffer , eol ) ) {
             curBuffer = lineObj.newBuffer;
             processline(lineObj.line);
         }

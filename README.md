@@ -24,6 +24,15 @@ readEachLineSync('test.txt', function(line) {
 })
 ```
 
+End-Of-Line can be specified along with encoding if necessary, otherwise it defaults to your operating system EOF:
+
+```javascript
+readEachLineSync('test.txt', 'utf-8', '\n', function(line) {
+  console.log(line)
+})
+```
+
+
 ## Credits
 
 Author: [Geza Kovacs](http://github.com/gkovacs)
